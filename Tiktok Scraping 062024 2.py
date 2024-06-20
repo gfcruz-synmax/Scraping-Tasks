@@ -1,4 +1,4 @@
-#Imports (Undetected Chromedriver, Selenium, BeautifulSoup, Time, Random, RegEx, CSV
+#Imports (Undetected Chromedriver, Selenium, BeautifulSoup, Time, Random, RegEx, CSV, OrderedDict)
 import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
@@ -6,6 +6,7 @@ import time
 import random
 import re
 import csv
+from collections import OrderedDict
 
 #Set up Undetected Chromedriver
 options = uc.ChromeOptions()
@@ -18,8 +19,8 @@ url = "https://www.tiktok.com/@bongbong.marcos"
 driver.get(url)
 
 #Scroll down with randomized, humanlike pauses to avoid captcha interruption
-time.sleep(random.uniform(5, 10))
-scroll_pause_time = random.uniform(2, 5)
+time.sleep(random.uniform(6, 10))
+scroll_pause_time = random.uniform(3, 5)
 last_height = driver.execute_script("return document.body.scrollHeight")
 while True:
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -28,7 +29,7 @@ while True:
     if new_height == last_height:
         break
     last_height = new_height
-    scroll_pause_time = random.uniform(2, 5)  # Randomize scroll pause time
+    scroll_pause_time = random.uniform(3, 5)  # Randomize scroll pause time
 
 #Parse page with BeautifulSoup
 page_source = driver.page_source
@@ -53,6 +54,7 @@ videos_header=re.sub("<.*?>","",str(videos_header)) #this strips unnecessary tex
 #Extract video URLs
 video_elements = soup.find_all('a', href=True)
 video_urls = [video['href'] for video in video_elements if '/video/' in video['href']]
+video_urls = list(OrderedDict.fromkeys(video_urls)) #this removes duplicates
 
 #Write everything to CSV. Formatting of the resulting file is suboptimal and may still be improved (particularly the video URLs), but the resulting file contains all requested information
 with open('results.csv', 'w', newline='') as file:
