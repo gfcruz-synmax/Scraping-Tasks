@@ -1,13 +1,11 @@
 #imports
 import requests
-import re
 from bs4 import BeautifulSoup as bs
 import pandas as pd
 
 #requests - found by inspecting the page elements
 r=requests.get("http://www.gasnom.com/ip/GOLDENPASS/oauc.cfm?type=1")
 webpage=bs(r.content, features="lxml")
-#webpage=bs(r.content, features="html.parser")
 
 #determine column names
 table = webpage.select("div.row")[0].select("table")[1].select("tr")[0] #targets the tr tag containing the headers
@@ -21,7 +19,6 @@ col.append("")
 #collect row data
 table5 = webpage.select("div.row")[0].select("table")[1].select('td[class^="datacell"]') #targets the table contents
 row5=[]
-
 for tag in table5:
 	row5.append(tag.text.replace("\r\n","").lstrip().rstrip()) #removes the \r\n occurrences and whitespaces in many of the columns
 
